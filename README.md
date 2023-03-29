@@ -8,7 +8,7 @@ from dataclasses import dataclass
 
 @dataclass
 class MyObj(Block):
-    _int: int = '2i'
+    _int: list[int] = '2i'
     _txt: bytes = '10s'
 
     

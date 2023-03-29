@@ -5,7 +5,7 @@ from dataclasses import dataclass, fields
 from typing import IO, Literal, TypeVar
 
 
-__all__=  ['Block']
+__all__ = ["Block"]
 
 
 T = TypeVar("T", bound="Block")
@@ -24,12 +24,17 @@ _sizes[8 if is_64bit else 4] = _sizes[8 if is_64bit else 4] + tuple("nNP")
 
 _reverse_sizes = {k: size for size, keys in _sizes.items() for k in keys}
 
+_conversion_matrix = {
+    "l": "i",  # On Mac/Ubuntu, this is 8 bytes, on Windows 4
+    "L": "I",  # On Mac/Ubuntu, this is 8 bytes, on Windows 4
+}
+
 
 def _details(field, field_info: dict[str, object]):
     default = field.default
     had_replacements = False
 
-    for replacement in re.findall("\{([^}]+)}", default):
+    for replacement in re.findall(r"\{([^}]+)}", default):
         had_replacements = True
 
         if replacement not in field_info:
@@ -51,6 +56,8 @@ def _details(field, field_info: dict[str, object]):
     type_ = match.group(2)
     repeat_ = match.group(3)
 
+    corrected_type = _conversion_matrix.get(type_, type_)  # Convert if needed.
+
     assert not (
         repeat_ and count
     ), f"I can only understand either a count, or a repeat, but not '{field.default}'. Please write this as {int(count or 1)+len(repeat_)}{type_} instead."
@@ -59,7 +66,7 @@ def _details(field, field_info: dict[str, object]):
     else:
         count = int(count or 1)
 
-    return count * _reverse_sizes[type_], count, type_, default
+    return count * _reverse_sizes[corrected_type], count, corrected_type, default
 
 
 def _read(block: type[T], fp: IO, alignment: Literal["@", "=", "<", ">", "!"] = "@") -> T:

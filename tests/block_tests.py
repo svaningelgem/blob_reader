@@ -153,11 +153,17 @@ def test_wrong_field_order_for_dynamic_fields():
 
     obj = DynamicFieldsWrongOrder(length=5, string=b"a" * 5)
 
-    with raises(KeyError, match=r"Unknown value 'length' for field string. This replacement value should be mentioned \*before\* the current field\."):
+    with raises(
+        KeyError,
+        match=r"Unknown value 'length' for field string. This replacement value should be mentioned \*before\* the current field\.",
+    ):
         obj.write(BytesIO())
 
-    stream = BytesIO(b'ab\x02')
-    with raises(KeyError, match=r"Unknown value 'length' for field string. This replacement value should be mentioned \*before\* the current field\."):
+    stream = BytesIO(b"ab\x02")
+    with raises(
+        KeyError,
+        match=r"Unknown value 'length' for field string. This replacement value should be mentioned \*before\* the current field\.",
+    ):
         obj.read(stream)
 
 
@@ -170,93 +176,105 @@ def test_wrong_identifier():
         UnknownField.read(BytesIO())
 
     with raises(ValueError, match=r"Field sut has an invalid \(or currently unsupported\) default: '2Z'"):
-        UnknownField(b'ab').write(BytesIO())
+        UnknownField(b"ab").write(BytesIO())
 
 
 def test_wrong_dynamic_identifier():
     @dataclass
     class UnknownDynamicField(Block):
-        length: int = 'H'
+        length: int = "H"
         sut: bytes = "{length}Z"
 
-    with raises(ValueError, match=r"Field sut has an invalid \(or currently unsupported\) default: '{length}Z' \(calculated: 2Z\)"):
-        UnknownDynamicField.read_le(BytesIO(b'\x02\x00ab'))
+    with raises(
+        ValueError,
+        match=r"Field sut has an invalid \(or currently unsupported\) default: '{length}Z' \(calculated: 2Z\)",
+    ):
+        UnknownDynamicField.read_le(BytesIO(b"\x02\x00ab"))
 
-    with raises(ValueError, match=r"Field sut has an invalid \(or currently unsupported\) default: '{length}Z' \(calculated: 2Z\)"):
-        UnknownDynamicField(length=2, sut=b'ab').write(BytesIO())
+    with raises(
+        ValueError,
+        match=r"Field sut has an invalid \(or currently unsupported\) default: '{length}Z' \(calculated: 2Z\)",
+    ):
+        UnknownDynamicField(length=2, sut=b"ab").write(BytesIO())
 
 
 def test_wrong_field_specification():
     @dataclass
     class SomeBlob(Block):
-        length: list[int] = '2HH'
+        length: list[int] = "2HH"
 
-    with raises(AssertionError, match=r"I can only understand either a count, or a repeat, but not '2HH'. Please write this as 3H instead."):
-        SomeBlob.read_le(BytesIO(b'\x02\x00\x02\x00\x02\x00'))
+    with raises(
+        AssertionError,
+        match=r"I can only understand either a count, or a repeat, but not '2HH'. Please write this as 3H instead.",
+    ):
+        SomeBlob.read_le(BytesIO(b"\x02\x00\x02\x00\x02\x00"))
 
-    with raises(AssertionError, match=r"I can only understand either a count, or a repeat, but not '2HH'. Please write this as 3H instead."):
+    with raises(
+        AssertionError,
+        match=r"I can only understand either a count, or a repeat, but not '2HH'. Please write this as 3H instead.",
+    ):
         SomeBlob(length=[2, 2, 2]).write(BytesIO())
 
 
 def test_have_repeating_field():
     @dataclass
     class SomeBlob(Block):
-        length: list[int] = 'HH'
+        length: list[int] = "HH"
 
     compare_to = SomeBlob(length=[2, 2])
-    obj = SomeBlob.read_le(BytesIO(b'\x02\x00\x02\x00\x02\x00'))
+    obj = SomeBlob.read_le(BytesIO(b"\x02\x00\x02\x00\x02\x00"))
     assert obj == compare_to
 
     stream = BytesIO()
     compare_to.write_le(stream)
     stream.seek(0)
-    assert stream.getvalue() == b'\x02\x00\x02\x00'
+    assert stream.getvalue() == b"\x02\x00\x02\x00"
 
 
 def test_have_zero_length_field():
     @dataclass
     class SomeBlob(Block):
-        length: list[int] = '0H'
-        string: bytes = '2s'
+        length: list[int] = "0H"
+        string: bytes = "2s"
 
-    compare_to = SomeBlob(length=[], string=b'ab')
-    obj = SomeBlob.read_be(BytesIO(b'abc'))
+    compare_to = SomeBlob(length=[], string=b"ab")
+    obj = SomeBlob.read_be(BytesIO(b"abc"))
     assert obj == compare_to
 
     stream = BytesIO()
     compare_to.write_be(stream)
     stream.seek(0)
-    assert stream.getvalue() == b'ab'
+    assert stream.getvalue() == b"ab"
 
 
 def test_different_encodings():
     @dataclass
     class SomeBlob(Block):
-        length: int = 'H'
+        length: int = "H"
 
     le_obj = SomeBlob(length=2)
     be_obj = SomeBlob(length=512)
 
-    assert SomeBlob.read(BytesIO(b'\x02\x00')) == le_obj
-    assert SomeBlob.read_native_standard(BytesIO(b'\x02\x00')) == le_obj
+    assert SomeBlob.read(BytesIO(b"\x02\x00")) == le_obj
+    assert SomeBlob.read_native_standard(BytesIO(b"\x02\x00")) == le_obj
 
-    assert SomeBlob.read_le(BytesIO(b'\x02\x00')) == le_obj
-    assert SomeBlob.read_little_endian(BytesIO(b'\x02\x00')) == le_obj
+    assert SomeBlob.read_le(BytesIO(b"\x02\x00")) == le_obj
+    assert SomeBlob.read_little_endian(BytesIO(b"\x02\x00")) == le_obj
 
-    assert SomeBlob.read_be(BytesIO(b'\x02\x00')) == be_obj
-    assert SomeBlob.read_big_endian(BytesIO(b'\x02\x00')) == be_obj
-    assert SomeBlob.read_network(BytesIO(b'\x02\x00')) == be_obj
+    assert SomeBlob.read_be(BytesIO(b"\x02\x00")) == be_obj
+    assert SomeBlob.read_big_endian(BytesIO(b"\x02\x00")) == be_obj
+    assert SomeBlob.read_network(BytesIO(b"\x02\x00")) == be_obj
 
-    def assert_method(object: SomeBlob, method: str, expected: bytes):
+    def assert_method(obj: SomeBlob, method: str, expected: bytes):
         stream = BytesIO()
-        getattr(object, method)(stream)
+        getattr(obj, method)(stream)
         assert stream.getvalue() == expected
 
-    assert_method(le_obj, 'write', b'\x02\x00')
-    assert_method(le_obj, 'write_native_standard', b'\x02\x00')
+    assert_method(le_obj, "write", b"\x02\x00")
+    assert_method(le_obj, "write_native_standard", b"\x02\x00")
 
-    assert_method(le_obj, 'write_le', b'\x02\x00')
-    assert_method(le_obj, 'write_little_endian', b'\x02\x00')
-    assert_method(le_obj, 'write_be', b'\x00\x02')
-    assert_method(le_obj, 'write_big_endian', b'\x00\x02')
-    assert_method(le_obj, 'write_network', b'\x00\x02')
+    assert_method(le_obj, "write_le", b"\x02\x00")
+    assert_method(le_obj, "write_little_endian", b"\x02\x00")
+    assert_method(le_obj, "write_be", b"\x00\x02")
+    assert_method(le_obj, "write_big_endian", b"\x00\x02")
+    assert_method(le_obj, "write_network", b"\x00\x02")

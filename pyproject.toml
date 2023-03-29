@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "blob_reader"
-version = "1.0.0"
+version = "1.0.1"
 description = "Easily _read binary data in a Pythonic way"
 authors = ["Steven 'KaReL' Van Ingelgem <steven@vaningelgem.be>"]
 license = "MIT"
@@ -16,6 +16,7 @@ black = "*"
 flake8 = "*"
 flake8-pyproject = "*"
 pytest-cov = "*"
+
 
 [build-system]
 requires = ["poetry-core"]
@@ -41,3 +42,4 @@ testpaths = [
     "tests",
 ]
 python_files = '*_tests.py'
+addopts = '--cov=blob_reader'

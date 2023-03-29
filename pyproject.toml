@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "blob_reader"
+version = "1.0.0"
+description = "Easily _read binary data in a Pythonic way"
+authors = ["Steven 'KaReL' Van Ingelgem <steven@vaningelgem.be>"]
+license = "MIT"
+readme = "README.md"
+
+
+[tool.poetry.dependencies]
+python = ">=3.7"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+flake8 = "*"
+flake8-pyproject = "*"
+pytest-cov = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.black]
+line_length = 120
+
+
+[tool.flake8]
+max_line_length = 120
+extend_ignore = 'E203'
+
+
+[tool.poetry.urls]
+"Source Code" = "https://github.com/svaningelgem/blob_reader"
+
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = [
+    "tests",
+]
+python_files = '*_tests.py'

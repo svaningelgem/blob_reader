@@ -40,7 +40,8 @@ jobs:
         run: poetry run pytest
 
       - name: List all files
-        run: find / | grep coverage
+        if: runner.os != 'Windows'
+        run: find / -type f 2>/dev/null | grep ".coverage"
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3

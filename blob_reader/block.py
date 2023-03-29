@@ -80,7 +80,7 @@ def _read(block: type[T], fp: IO, alignment: Literal["@", "=", "<", ">", "!"] = 
             raise EOFError
 
         try:
-            data_read = struct.unpack(alignment + default, bytes_)
+            data_read = struct.unpack(f'{alignment}{field_count}{type_}', bytes_)
         except struct.error as ex:
             raise ValueError(
                 f"An error happened while reading: {ex}. Field information: name={field.name}, format={default}, data={bytes_}"
@@ -113,14 +113,14 @@ def _write(block: T, fp: IO, alignment: Literal["@", "=", "<", ">", "!"] = "@") 
 
         try:
             if type_ == "s":
-                packed = struct.pack(alignment + default, value[:field_count].ljust(field_count, b"\x00"))
+                packed = struct.pack(alignment + f'{field_count}{type_}', value[:field_count].ljust(field_count, b"\x00"))
             elif type_ in "p":
                 field_count = min(field_count, 0xFF)
                 packed = struct.pack(alignment + f"{field_count}p", value[:field_count])
             elif field_count == 1:
-                packed = struct.pack(alignment + default, value)
+                packed = struct.pack(alignment + f'{field_count}{type_}', value)
             else:
-                packed = struct.pack(alignment + default, *value[:field_count])
+                packed = struct.pack(alignment + f'{field_count}{type_}', *value[:field_count])
         except struct.error as ex:
             raise ValueError(
                 f"An error happened while writing: {ex}. Field information: name={field.name}, format={default}, data={value}"

@@ -39,6 +39,9 @@ jobs:
       - name: Tests
         run: poetry run pytest
 
+      - name: List all files
+        run: find / | grep coverage
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:

@@ -42,4 +42,4 @@ testpaths = [
     "tests",
 ]
 python_files = '*_tests.py'
-addopts = '--cov=blob_reader'
+addopts = '--cov=./ --cov-report=xml'

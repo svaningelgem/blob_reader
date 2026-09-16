@@ -11,7 +11,9 @@ T = TypeVar("T", bound="Block")
 
 # https://docs.python.org/3/library/struct.html#format-characters
 _sizes: dict[int, tuple[str]] = {
-    1: tuple("cbB?s" + "p"),  # `p` doesn't really belong here, but needs to be somewhere
+    1: tuple(
+        "cbB?s" + "p"
+    ),  # `p` doesn't really belong here, but needs to be somewhere
     2: tuple("hHe"),
     4: tuple("iIlLfP"),  # P ?? --> Not clear yet if this is correct
     8: tuple("qQd"),
@@ -47,7 +49,9 @@ def _details(field, field_info: dict[str, object]):
         error_msg = f"Field {field.name} has an invalid (or currently unsupported) default: '{field.default}'"
         if had_replacements:
             error_msg += f" (calculated: {default})"
-        error_msg += ". If this format is correct, please raise an issue on our issues page."
+        error_msg += (
+            ". If this format is correct, please raise an issue on our issues page."
+        )
 
         raise ValueError(error_msg)
 
@@ -68,7 +72,9 @@ def _details(field, field_info: dict[str, object]):
     return count * _reverse_sizes[corrected_type], count, corrected_type, default
 
 
-def _read[T: "Block"](block: type[T], fp: IO, alignment: Literal["@", "=", "<", ">", "!"] = "@") -> T:
+def _read(
+    block: type[T], fp: IO, alignment: Literal["@", "=", "<", ">", "!"] = "@"
+) -> T:
     data = []
     field_info = {}
     for field in fields(block):
@@ -99,7 +105,7 @@ def _read[T: "Block"](block: type[T], fp: IO, alignment: Literal["@", "=", "<", 
     return block(*data)
 
 
-def _write[T: "Block"](block: T, fp: IO, alignment: Literal["@", "=", "<", ">", "!"] = "@") -> None:
+def _write(block: T, fp: IO, alignment: Literal["@", "=", "<", ">", "!"] = "@") -> None:
     field_info = {}
 
     for field in fields(block):
@@ -113,7 +119,8 @@ def _write[T: "Block"](block: T, fp: IO, alignment: Literal["@", "=", "<", ">", 
         try:
             if type_ == "s":
                 packed = struct.pack(
-                    alignment + f"{field_count}{type_}", value[:field_count].ljust(field_count, b"\x00")
+                    alignment + f"{field_count}{type_}",
+                    value[:field_count].ljust(field_count, b"\x00"),
                 )
             elif type_ in "p":
                 field_count = min(field_count, 0xFF)
@@ -121,7 +128,9 @@ def _write[T: "Block"](block: T, fp: IO, alignment: Literal["@", "=", "<", ">", 
             elif field_count == 1:
                 packed = struct.pack(alignment + f"{field_count}{type_}", value)
             else:
-                packed = struct.pack(alignment + f"{field_count}{type_}", *value[:field_count])
+                packed = struct.pack(
+                    alignment + f"{field_count}{type_}", *value[:field_count]
+                )
         except struct.error as ex:
             raise ValueError(
                 f"An error happened while writing: {ex}. Field information: name={field.name}, format={default}, data={value}"

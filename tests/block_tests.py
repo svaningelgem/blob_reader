@@ -1,9 +1,8 @@
 from dataclasses import dataclass, fields
 from io import BytesIO
 
-from pytest import approx, fixture, raises
-
 from blob_reader import Block
+from pytest import approx, fixture, raises
 
 
 @dataclass

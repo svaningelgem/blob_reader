@@ -4,7 +4,6 @@ import sys
 from dataclasses import dataclass, fields
 from typing import IO, Literal, TypeVar
 
-
 __all__ = ["Block"]
 
 
@@ -43,7 +42,7 @@ def _details(field, field_info: dict[str, object]):
             )
         default = default.replace(f"{{{replacement}}}", str(field_info[replacement]))
 
-    match = re.match(rf'(\d*)([{"".join(_reverse_sizes)}])(\2*)', default)
+    match = re.match(rf"(\d*)([{''.join(_reverse_sizes)}])(\2*)", default)
     if not match:
         error_msg = f"Field {field.name} has an invalid (or currently unsupported) default: '{field.default}'"
         if had_replacements:
@@ -58,9 +57,9 @@ def _details(field, field_info: dict[str, object]):
 
     corrected_type = _conversion_matrix.get(type_, type_)  # Convert if needed.
 
-    assert not (
-        repeat_ and count
-    ), f"I can only understand either a count, or a repeat, but not '{field.default}'. Please write this as {int(count or 1)+len(repeat_)}{type_} instead."
+    assert not (repeat_ and count), (
+        f"I can only understand either a count, or a repeat, but not '{field.default}'. Please write this as {int(count or 1) + len(repeat_)}{type_} instead."
+    )
     if repeat_:
         count = len(repeat_) + 1
     else:
@@ -69,7 +68,7 @@ def _details(field, field_info: dict[str, object]):
     return count * _reverse_sizes[corrected_type], count, corrected_type, default
 
 
-def _read(block: type[T], fp: IO, alignment: Literal["@", "=", "<", ">", "!"] = "@") -> T:
+def _read[T: "Block"](block: type[T], fp: IO, alignment: Literal["@", "=", "<", ">", "!"] = "@") -> T:
     data = []
     field_info = {}
     for field in fields(block):
@@ -100,11 +99,11 @@ def _read(block: type[T], fp: IO, alignment: Literal["@", "=", "<", ">", "!"] = 
     return block(*data)
 
 
-def _write(block: T, fp: IO, alignment: Literal["@", "=", "<", ">", "!"] = "@") -> None:
+def _write[T: "Block"](block: T, fp: IO, alignment: Literal["@", "=", "<", ">", "!"] = "@") -> None:
     field_info = {}
 
     for field in fields(block):
-        byte_count, field_count, type_, default = _details(field, field_info)
+        _byte_count, field_count, type_, default = _details(field, field_info)
         if field_count == 0:
             continue
 

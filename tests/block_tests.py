@@ -1,8 +1,9 @@
 from dataclasses import dataclass, fields
 from io import BytesIO
 
-from blob_reader import Block
 from pytest import approx, fixture, raises
+
+from blob_reader import Block
 
 
 @dataclass
@@ -171,10 +172,16 @@ def test_wrong_identifier():
     class UnknownField(Block):
         sut: bytes = "2Z"
 
-    with raises(ValueError, match=r"Field sut has an invalid \(or currently unsupported\) default: '2Z'"):
+    with raises(
+        ValueError,
+        match=r"Field sut has an invalid \(or currently unsupported\) default: '2Z'",
+    ):
         UnknownField.read(BytesIO())
 
-    with raises(ValueError, match=r"Field sut has an invalid \(or currently unsupported\) default: '2Z'"):
+    with raises(
+        ValueError,
+        match=r"Field sut has an invalid \(or currently unsupported\) default: '2Z'",
+    ):
         UnknownField(b"ab").write(BytesIO())
 
 

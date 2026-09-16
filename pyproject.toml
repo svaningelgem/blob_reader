@@ -1,26 +1,41 @@
-[tool.poetry]
+[project]
 name = "blob_reader"
 version = "1.0.1"
 description = "Easily _read binary data in a Pythonic way"
-authors = ["Steven 'KaReL' Van Ingelgem <steven@vaningelgem.be>"]
-license = "MIT"
+authors = [{ name = "Steven 'KaReL' Van Ingelgem", email = "steven@vaningelgem.be" }]
+requires-python = ">=3.9"
 readme = "README.md"
+license = "MIT"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
 
+[project.urls]
+"Source Code" = "https://github.com/svaningelgem/blob_reader"
 
-[tool.poetry.dependencies]
-python = ">=3.9"
+[dependency-groups]
+dev = [
+    "black",
+    "flake8",
+    "flake8-pyproject",
+    "pytest-cov",
+]
 
+[tool.uv]
+default-groups = "all"
 
-[tool.poetry.group.dev.dependencies]
-black = "*"
-flake8 = "*"
-flake8-pyproject = "*"
-pytest-cov = "*"
-
+[tool.uv.build-backend]
+module-root = ""
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.12.13,<0.13.0"]
+build-backend = "uv_build"
 
 
 [tool.black]
@@ -30,10 +45,6 @@ line_length = 120
 [tool.flake8]
 max_line_length = 120
 extend_ignore = 'E203'
-
-
-[tool.poetry.urls]
-"Source Code" = "https://github.com/svaningelgem/blob_reader"
 
 
 [tool.pytest.ini_options]

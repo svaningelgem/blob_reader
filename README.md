@@ -8,11 +8,11 @@ from dataclasses import dataclass
 
 @dataclass
 class MyObj(Block):
-    _int: list[int] = '2i'
-    _txt: bytes = '10s'
+    _int: list[int] = "2i"
+    _txt: bytes = "10s"
 
-    
-with open('some_file.bin', 'rb') as fp:
+
+with open("some_file.bin", "rb") as fp:
     obj = MyObj.read(fp)
 ```
 
@@ -20,7 +20,7 @@ with open('some_file.bin', 'rb') as fp:
 ```python
 from blob_reader import Block
 
-Block.read     # Native reading
+Block.read  # Native reading
 Block.read_be  # Big endian
 Block.read_le  # Little endian
 
@@ -29,12 +29,12 @@ Block.write_be
 Block.write_le
 
 # Aliases
-Block.read_big_endian     = Block.read_be
-Block.read_network        = Block.read_be
-Block.read_little_endian  = Block.read_le
+Block.read_big_endian = Block.read_be
+Block.read_network = Block.read_be
+Block.read_little_endian = Block.read_le
 
-Block.write_big_endian    = Block.write_be
-Block.write_network       = Block.write_be
+Block.write_big_endian = Block.write_be
+Block.write_network = Block.write_be
 Block.write_little_endian = Block.write_le
 ```
 
@@ -115,10 +115,11 @@ from io import BytesIO
 
 @dataclass
 class MyObj(Block):
-    _int: int = 'H'
-    _txt: bytes = '{_int}s'
+    _int: int = "H"
+    _txt: bytes = "{_int}s"
 
-stream = BytesIO(b'\x02abc')
+
+stream = BytesIO(b"\x02abc")
 obj = MyObj.read(stream)
 # obj = MyObj(_int=2, _txt=b'ab')
 ```

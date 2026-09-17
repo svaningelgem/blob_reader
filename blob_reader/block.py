@@ -72,7 +72,7 @@ def _details(field, field_info: dict[str, object]):
     return count * _reverse_sizes[corrected_type], count, corrected_type, default
 
 
-def _read(
+def _read[T: "Block"](
     block: type[T], fp: IO, alignment: Literal["@", "=", "<", ">", "!"] = "@"
 ) -> T:
     data = []
@@ -105,7 +105,9 @@ def _read(
     return block(*data)
 
 
-def _write(block: T, fp: IO, alignment: Literal["@", "=", "<", ">", "!"] = "@") -> None:
+def _write[T: "Block"](
+    block: T, fp: IO, alignment: Literal["@", "=", "<", ">", "!"] = "@"
+) -> None:
     field_info = {}
 
     for field in fields(block):
